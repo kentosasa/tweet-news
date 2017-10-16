@@ -15,19 +15,7 @@ const getHomeTimeline = () => {
       return
     }
 
-    tweets.forEach(tweet => {
-      if(tweet.entities.urls.length > 0) {
-        const url = tweet.entities.urls[0].expanded_url
-        if(url.includes('https://twitter.com')) return
-        client.fetch(url, {}, function (err, $, res) {
-          if(err) {
-            return
-          }
-          // ScrapBox用に出力
-          console.log('[' + $('title').text() + ' ' + url + ']')
-        })
-      }
-    })
+    tweetToScrapBoxItem(tweets)
   });
 }
 
@@ -42,28 +30,29 @@ const getLists = () => {
   })
 }
 
-// masuilab 6598839
-
 const getListTimeline = (listId) => {
   twc.get('lists/statuses.json', {list_id: listId, count: 200}, function(error, tweets, response) {
     if (error) {
-      throw new Error('something has happend in home_timeline')
+      throw new Error('something has happend in list_timeline')
       return
     }
+    tweetToScrapBoxItem(tweets)
+  })
+}
 
-    tweets.forEach(tweet => {
-      if(tweet.entities.urls.length > 0) {
-        const url = tweet.entities.urls[0].expanded_url
-        if(url.includes('https://twitter.com')) return
-        client.fetch(url, {}, function (err, $, res) {
-          if(err) {
-            return
-          }
-          // ScrapBox用に出力
-          console.log('[' + $('title').text() + ' ' + url + ']')
-        })
-      }
-    })
+const tweetToScrapBoxItem = (tweets) => {
+  tweets.forEach(tweet => {
+    if(tweet.entities.urls.length > 0) {
+      const url = tweet.entities.urls[0].expanded_url
+      if(url.includes('https://twitter.com')) return
+      client.fetch(url, {}, function (err, $, res) {
+        if(err) {
+          return
+        }
+        // ScrapBox用に出力
+        console.log('[' + $('title').text() + ' ' + url + ']')
+      })
+    }
   })
 }
 
